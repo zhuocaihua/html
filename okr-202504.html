@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>部门OKR执行看板 - 增强版</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+        }
+        .chart-container {
+            width: 100%;
+            height: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ecf0f1;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+        .info-panel {
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+        <!-- 状态分布增强版 -->
+        <div class="chart-container">
+            <div id="statusChart" style="height:60%"></div>
+            <div class="info-panel">
+                <h4>状态详情说明</h4>
+                <p>• 正常：按计划推进的任务（21项）</p>
+                <p>• 延期：存在进度延迟的任务（3项）</p>
+                <p>• 变更：需求发生调整的任务（1项）</p>
+            </div>
+        </div>
+
+        <!-- 优先级矩阵 -->
+        <div class="chart-container">
+            <div id="priorityChart" style="height:60%"></div>
+            <table>
+                <tr>
+                    <th>优先级</th>
+                    <th>总任务数</th>
+                    <th>完成率</th>
+                </tr>
+                <tr>
+                    <td>P0（紧急）</td>
+                    <td>10</td>
+                    <td>80%</td>
+                </tr>
+                <tr>
+                    <td>P1（重要）</td>
+                    <td>8</td>
+                    <td>75%</td>
+                </tr>
+                <tr>
+                    <td>P2（常规）</td>
+                    <td>9</td>
+                    <td>66%</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 负责人视图 -->
+        <div class="chart-container">
+            <div id="ownerChart" style="height:70%"></div>
+            <div class="info-panel">
+                <h4>负责人工作负荷</h4>
+                <p>• 张猛：6项任务（2项延期）</p>
+                <p>• 陈晨：5项任务（1项延期）</p>
+                <p>• 陈放：4项任务（100%完成）</p>
+            </div>
+        </div>
+
+        <!-- 延期任务看板 -->
+        <div class="chart-container">
+            <h3 style="color:#e74c3c">⏳ 延期任务跟踪（3项）</h3>
+            <table>
+                <tr>
+                    <th>任务描述</th>
+                    <th>负责人</th>
+                    <th>计划完成日</th>
+                    <th>当前进度</th>
+                </tr>
+                <tr>
+                    <td>日志监控管理完成id4/id6数据解析</td>
+                    <td>张猛</td>
+                    <td>2025-03-31</td>
+                    <td>未开始</td>
+                </tr>
+                <tr>
+                    <td>电铲新版本代码开发与智能化功能集成</td>
+                    <td>张猛</td>
+                    <td>2025-03-31</td>
+                    <td>30%</td>
+                </tr>
+                <tr>
+                    <td>开发数据统计仪表盘UI</td>
+                    <td>陈晨</td>
+                    <td>2025-03-31</td>
+                    <td>45%</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 状态分布图（带数据标签）
+        let statusChart = echarts.init(document.getElementById('statusChart'));
+        statusChart.setOption({
+            title: { 
+                text: '任务状态分布',
+                subtext: '总任务24项',
+                left: 'center'
+            },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [{
+                type: 'pie',
+                data: [
+                    { value: 18, name: '正常' },
+                    { value: 3, name: '延期' },
+                    { value: 1, name: '变更' }
+                ],
+                radius: ['30%', '60%'],
+                label: {
+                    show: true,
+                    formatter: '{b}: {c}项 ({d}%)'
+                },
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }]
+        });
+
+        // 优先级三维分析
+        let priorityChart = echarts.init(document.getElementById('priorityChart'));
+        priorityChart.setOption({
+            title: { 
+                text: '优先级多维分析',
+                subtext: '按紧急程度统计',
+                left: 'center'
+            },
+            xAxis: { 
+                type: 'category', 
+                data: ['P0', 'P1', 'P2'],
+                axisLabel: {
+                    fontWeight: 'bold'
+                }
+            },
+            yAxis: { 
+                type: 'value',
+                name: '任务数量'
+            },
+            series: [{
+                type: 'bar',
+                data: [
+                    { value: 10, itemStyle: { color: '#e74c3c' } },
+                    { value: 8, itemStyle: { color: '#3498db' } },
+                    { value: 9, itemStyle: { color: '#2ecc71' } }
+                ],
+                label: {
+                    show: true,
+                    position: 'top',
+                    formatter: '{c}项任务'
+                }
+            }]
+        });
+
+        // 负责人能力矩阵
+        let ownerChart = echarts.init(document.getElementById('ownerChart'));
+        ownerChart.setOption({
+            title: { 
+                text: '负责人任务分布',
+                subtext: 'TOP5任务承担者',
+                left: 'center'
+            },
+            xAxis: {
+                type: 'value',
+                name: '任务数量'
+            },
+            yAxis: {
+                type: 'category',
+                data: ['张猛', '陈晨', '陈放', '岳众一', '孙国帅'],
+                axisLabel: {
+                    fontWeight: 'bold'
+                }
+            },
+            series: [{
+                type: 'bar',
+                data: [6, 5, 4, 3, 2],
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#3498db' },
+                        { offset: 1, color: '#2ecc71' }
+                    ])
+                },
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{c}项任务'
+                }
+            }]
+        });
+    </script>
+</body>
+</html>
